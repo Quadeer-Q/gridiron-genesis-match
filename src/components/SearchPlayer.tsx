@@ -42,28 +42,28 @@ const SearchPlayer = ({ position, onSelect }: SearchPlayerProps) => {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Select Player</label>
+        <label className="text-sm font-medium text-white">Select Player</label>
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search for a player..."
-            className="pl-8"
+            className="pl-8 bg-[#1C1C1C] border-[#333333] text-white placeholder:text-gray-500"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="border rounded-md max-h-[200px] overflow-y-auto">
+      <div className="border border-[#333333] rounded-md max-h-[200px] overflow-y-auto bg-[#1C1C1C]">
         {loading ? (
-          <div className="text-center py-4 text-sm text-muted-foreground">Loading players...</div>
+          <div className="text-center py-4 text-sm text-gray-400">Loading players...</div>
         ) : filteredPlayers.length > 0 ? (
-          <ul className="divide-y">
+          <ul className="divide-y divide-[#333333]">
             {filteredPlayers.map((player) => (
               <li key={player}>
                 <button
                   onClick={() => onSelect(player)}
-                  className="w-full text-left px-3 py-2 hover:bg-gray-100 transition-colors text-sm"
+                  className="w-full text-left px-3 py-2 hover:bg-[#2A2A2A] transition-colors text-sm text-white"
                 >
                   {player}
                 </button>
@@ -71,7 +71,7 @@ const SearchPlayer = ({ position, onSelect }: SearchPlayerProps) => {
             ))}
           </ul>
         ) : (
-          <div className="text-center py-4 text-sm text-muted-foreground">
+          <div className="text-center py-4 text-sm text-gray-400">
             {searchQuery ? "No players found" : "No players available"}
           </div>
         )}
