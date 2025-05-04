@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface PlayerComparisonViewProps {
   player: string | null;
@@ -15,6 +16,7 @@ interface SimilarPlayer {
   name: string;
   similarity: number;
   strengths: string[];
+  imageUrl?: string;
 }
 
 interface PlayerTrait {
@@ -26,6 +28,7 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
   const [loading, setLoading] = useState(true);
   const [similarPlayers, setSimilarPlayers] = useState<SimilarPlayer[]>([]);
   const [playerTraits, setPlayerTraits] = useState<Record<string, PlayerTrait[]>>({});
+  const [mainPlayerImage, setMainPlayerImage] = useState<string>("");
 
   useEffect(() => {
     // This would be replaced with an actual API call to your ML backend
@@ -35,33 +38,41 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Mock similar players data
+      // Mock similar players data with images
       const mockSimilarPlayers: Record<string, SimilarPlayer[]> = {
         "Lionel Messi": [
-          { name: "Mohamed Salah", similarity: 87, strengths: ["Dribbling", "Finishing", "Vision"] },
-          { name: "Kevin De Bruyne", similarity: 81, strengths: ["Passing", "Vision", "Set Pieces"] },
-          { name: "Neymar Jr", similarity: 89, strengths: ["Dribbling", "Creativity", "Technical"] },
-          { name: "Bernardo Silva", similarity: 79, strengths: ["Ball Control", "Agility", "Passing"] },
+          { name: "Mohamed Salah", similarity: 87, strengths: ["Dribbling", "Finishing", "Vision"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
+          { name: "Kevin De Bruyne", similarity: 81, strengths: ["Passing", "Vision", "Set Pieces"], imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" },
+          { name: "Neymar Jr", similarity: 89, strengths: ["Dribbling", "Creativity", "Technical"], imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec881214838" },
+          { name: "Bernardo Silva", similarity: 79, strengths: ["Ball Control", "Agility", "Passing"], imageUrl: "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2" },
         ],
         "Virgil van Dijk": [
-          { name: "Alexsandro Ribeiro", similarity: 96, strengths: ["Aerial Duels", "Positioning", "Leadership"] },
-          { name: "Levi Colwill", similarity: 96, strengths: ["Tackling", "Aerial Duels", "Composure"] },
-          { name: "Kim Min-jae", similarity: 96, strengths: ["Physical Presence", "Interceptions", "Speed"] },
-          { name: "Amir Rrahmani", similarity: 95, strengths: ["Positioning", "Anticipation", "Tackling"] },
-          { name: "Obite N'Dicka", similarity: 95, strengths: ["Aerial Duels", "Strength", "Marking"] },
+          { name: "Alexsandro Ribeiro", similarity: 96, strengths: ["Aerial Duels", "Positioning", "Leadership"], imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" },
+          { name: "Levi Colwill", similarity: 96, strengths: ["Tackling", "Aerial Duels", "Composure"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
+          { name: "Kim Min-jae", similarity: 96, strengths: ["Physical Presence", "Interceptions", "Speed"], imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec881214838" },
+          { name: "Amir Rrahmani", similarity: 95, strengths: ["Positioning", "Anticipation", "Tackling"], imageUrl: "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2" },
+          { name: "Obite N'Dicka", similarity: 95, strengths: ["Aerial Duels", "Strength", "Marking"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
         ],
         "Kevin De Bruyne": [
-          { name: "Bruno Fernandes", similarity: 85, strengths: ["Vision", "Long Shots", "Set Pieces"] },
-          { name: "Toni Kroos", similarity: 83, strengths: ["Passing", "Vision", "Ball Control"] },
-          { name: "Thomas Müller", similarity: 78, strengths: ["Positioning", "Off-the-ball", "Intelligence"] },
-          { name: "Mesut Özil", similarity: 81, strengths: ["Vision", "Passing", "Creativity"] },
+          { name: "Bruno Fernandes", similarity: 85, strengths: ["Vision", "Long Shots", "Set Pieces"], imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" },
+          { name: "Toni Kroos", similarity: 83, strengths: ["Passing", "Vision", "Ball Control"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
+          { name: "Thomas Müller", similarity: 78, strengths: ["Positioning", "Off-the-ball", "Intelligence"], imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec881214838" },
+          { name: "Mesut Özil", similarity: 81, strengths: ["Vision", "Passing", "Creativity"], imageUrl: "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2" },
         ],
         "Manuel Neuer": [
-          { name: "Alisson Becker", similarity: 84, strengths: ["Reflexes", "Distribution", "Command"] },
-          { name: "Ederson", similarity: 82, strengths: ["Distribution", "Ball Playing", "Reflexes"] },
-          { name: "Thibaut Courtois", similarity: 79, strengths: ["Height", "Reach", "Positioning"] },
-          { name: "Jan Oblak", similarity: 81, strengths: ["Shot Stopping", "Positioning", "Consistency"] },
+          { name: "Alisson Becker", similarity: 84, strengths: ["Reflexes", "Distribution", "Command"], imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" },
+          { name: "Ederson", similarity: 82, strengths: ["Distribution", "Ball Playing", "Reflexes"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
+          { name: "Thibaut Courtois", similarity: 79, strengths: ["Height", "Reach", "Positioning"], imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec881214838" },
+          { name: "Jan Oblak", similarity: 81, strengths: ["Shot Stopping", "Positioning", "Consistency"], imageUrl: "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2" },
         ]
+      };
+      
+      // Main player images
+      const mainPlayerImages: Record<string, string> = {
+        "Virgil van Dijk": "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=400&h=400&fit=crop",
+        "Lionel Messi": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
+        "Kevin De Bruyne": "https://images.unsplash.com/photo-1501286353178-1ec881214838?w=400&h=400&fit=crop",
+        "Manuel Neuer": "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2?w=400&h=400&fit=crop"
       };
 
       // Mock player traits data - fingerprint
@@ -113,6 +124,9 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
       const selectedPlayerTraits = mockPlayerTraits[player || ""] || {};
       setPlayerTraits(selectedPlayerTraits);
       
+      // Set main player image
+      setMainPlayerImage(mainPlayerImages[player || ""] || "");
+      
       setLoading(false);
     };
 
@@ -163,17 +177,44 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
       </CardHeader>
       <CardContent className="px-0">
         {player && player === "Virgil van Dijk" && (
-          <div className="mb-8 bg-[#1C1C1C] p-5 rounded-lg border border-[#333333]">
-            <h3 className="text-xl font-bold text-white mb-4">Virgil van Dijk's Unique Traits</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {getUniqueTraits().map((trait) => (
-                <div key={trait.trait} className="flex justify-between items-center">
-                  <span className="text-gray-300">{trait.trait}</span>
-                  <span className="font-mono bg-gradient-to-r from-[#E4002B] to-[#0057B8] bg-clip-text text-transparent font-bold">
-                    {trait.value.toFixed(2)}
-                  </span>
+          <div className="mb-8">
+            <div className="bg-[#1C1C1C] p-5 rounded-lg border border-[#333333] mb-6">
+              <div className="flex flex-col md:flex-row gap-6 items-center mb-6">
+                <div className="w-full md:w-1/3 flex justify-center">
+                  {mainPlayerImage ? (
+                    <div className="relative w-48 h-48 rounded-lg overflow-hidden border-2 border-[#E4002B]">
+                      <img 
+                        src={mainPlayerImage} 
+                        alt={player} 
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0A0A]/80 flex items-end">
+                        <div className="p-3 w-full">
+                          <h3 className="text-white font-bold text-lg">{player}</h3>
+                          <p className="text-gray-300 text-sm">{position === "def" ? "Defender" : position}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <Avatar className="w-48 h-48 rounded-lg bg-[#2A2A2A] border-2 border-[#E4002B]">
+                      <AvatarFallback className="text-4xl">{player?.charAt(0) || "P"}</AvatarFallback>
+                    </Avatar>
+                  )}
                 </div>
-              ))}
+                <div className="w-full md:w-2/3">
+                  <h3 className="text-xl font-bold text-white mb-4">Unique Traits</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {getUniqueTraits().map((trait) => (
+                      <div key={trait.trait} className="flex justify-between items-center">
+                        <span className="text-gray-300">{trait.trait}</span>
+                        <span className="font-mono bg-gradient-to-r from-[#E4002B] to-[#0057B8] bg-clip-text text-transparent font-bold">
+                          {trait.value.toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -183,17 +224,34 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
             <HoverCard key={similarPlayer.name}>
               <HoverCardTrigger asChild>
                 <div className="bg-[#1C1C1C] p-4 rounded-lg shadow-lg border border-[#333333] hover:border-[#E4002B]/30 transition-all cursor-pointer">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-semibold text-white">{similarPlayer.name}</h3>
-                    <span className="bg-gradient-to-r from-[#E4002B] to-[#0057B8] text-white px-2 py-1 rounded-full text-xs font-medium">
-                      {similarPlayer.similarity}% Match
-                    </span>
+                  <div className="flex items-center gap-4 mb-4">
+                    {similarPlayer.imageUrl ? (
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#0057B8]">
+                        <img 
+                          src={`${similarPlayer.imageUrl}?w=100&h=100&fit=crop`} 
+                          alt={similarPlayer.name} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <Avatar className="w-16 h-16 border-2 border-[#0057B8]">
+                        <AvatarFallback>{similarPlayer.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                    )}
+                    
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="text-lg font-semibold text-white">{similarPlayer.name}</h3>
+                        <span className="bg-gradient-to-r from-[#E4002B] to-[#0057B8] text-white px-2 py-1 rounded-full text-xs font-medium">
+                          {similarPlayer.similarity}% Match
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   
                   <Progress 
                     value={similarPlayer.similarity} 
-                    className="h-2 mb-4" 
-                    indicatorClassName="bg-gradient-to-r from-[#E4002B] to-[#0057B8]" 
+                    className="h-2 mb-4 bg-[#333333]"
                   />
                   
                   <div>
@@ -202,7 +260,7 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
                       {similarPlayer.strengths.map((strength) => (
                         <span 
                           key={strength} 
-                          className="bg-[#0057B8]/20 border border-[#0057B8]/40 text-[#0057B8] text-white px-2 py-1 rounded-full text-xs"
+                          className="bg-[#0057B8]/20 border border-[#0057B8]/40 text-white px-2 py-1 rounded-full text-xs"
                         >
                           {strength}
                         </span>
