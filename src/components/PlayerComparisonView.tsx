@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { fetchWikipediaImage } from "@/utils/wikipediaImage";
 
 interface PlayerComparisonViewProps {
   player: string | null;
@@ -29,6 +30,7 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
   const [similarPlayers, setSimilarPlayers] = useState<SimilarPlayer[]>([]);
   const [playerTraits, setPlayerTraits] = useState<Record<string, PlayerTrait[]>>({});
   const [mainPlayerImage, setMainPlayerImage] = useState<string>("");
+  const [imagesLoading, setImagesLoading] = useState(false);
 
   useEffect(() => {
     // This would be replaced with an actual API call to your ML backend
@@ -38,43 +40,35 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Mock similar players data with images
+      // Mock similar players data
       const mockSimilarPlayers: Record<string, SimilarPlayer[]> = {
         "Lionel Messi": [
-          { name: "Mohamed Salah", similarity: 87, strengths: ["Dribbling", "Finishing", "Vision"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
-          { name: "Kevin De Bruyne", similarity: 81, strengths: ["Passing", "Vision", "Set Pieces"], imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" },
-          { name: "Neymar Jr", similarity: 89, strengths: ["Dribbling", "Creativity", "Technical"], imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec881214838" },
-          { name: "Bernardo Silva", similarity: 79, strengths: ["Ball Control", "Agility", "Passing"], imageUrl: "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2" },
+          { name: "Mohamed Salah", similarity: 87, strengths: ["Dribbling", "Finishing", "Vision"] },
+          { name: "Kevin De Bruyne", similarity: 81, strengths: ["Passing", "Vision", "Set Pieces"] },
+          { name: "Neymar Jr", similarity: 89, strengths: ["Dribbling", "Creativity", "Technical"] },
+          { name: "Bernardo Silva", similarity: 79, strengths: ["Ball Control", "Agility", "Passing"] },
         ],
         "Virgil van Dijk": [
-          { name: "Alexsandro Ribeiro", similarity: 96, strengths: ["Aerial Duels", "Positioning", "Leadership"], imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" },
-          { name: "Levi Colwill", similarity: 96, strengths: ["Tackling", "Aerial Duels", "Composure"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
-          { name: "Kim Min-jae", similarity: 96, strengths: ["Physical Presence", "Interceptions", "Speed"], imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec881214838" },
-          { name: "Amir Rrahmani", similarity: 95, strengths: ["Positioning", "Anticipation", "Tackling"], imageUrl: "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2" },
-          { name: "Obite N'Dicka", similarity: 95, strengths: ["Aerial Duels", "Strength", "Marking"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
+          { name: "Alexsandro Ribeiro", similarity: 96, strengths: ["Aerial Duels", "Positioning", "Leadership"] },
+          { name: "Levi Colwill", similarity: 96, strengths: ["Tackling", "Aerial Duels", "Composure"] },
+          { name: "Kim Min-jae", similarity: 96, strengths: ["Physical Presence", "Interceptions", "Speed"] },
+          { name: "Amir Rrahmani", similarity: 95, strengths: ["Positioning", "Anticipation", "Tackling"] },
+          { name: "Obite N'Dicka", similarity: 95, strengths: ["Aerial Duels", "Strength", "Marking"] },
         ],
         "Kevin De Bruyne": [
-          { name: "Bruno Fernandes", similarity: 85, strengths: ["Vision", "Long Shots", "Set Pieces"], imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" },
-          { name: "Toni Kroos", similarity: 83, strengths: ["Passing", "Vision", "Ball Control"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
-          { name: "Thomas Müller", similarity: 78, strengths: ["Positioning", "Off-the-ball", "Intelligence"], imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec881214838" },
-          { name: "Mesut Özil", similarity: 81, strengths: ["Vision", "Passing", "Creativity"], imageUrl: "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2" },
+          { name: "Bruno Fernandes", similarity: 85, strengths: ["Vision", "Long Shots", "Set Pieces"] },
+          { name: "Toni Kroos", similarity: 83, strengths: ["Passing", "Vision", "Ball Control"] },
+          { name: "Thomas Müller", similarity: 78, strengths: ["Positioning", "Off-the-ball", "Intelligence"] },
+          { name: "Mesut Özil", similarity: 81, strengths: ["Vision", "Passing", "Creativity"] },
         ],
         "Manuel Neuer": [
-          { name: "Alisson Becker", similarity: 84, strengths: ["Reflexes", "Distribution", "Command"], imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" },
-          { name: "Ederson", similarity: 82, strengths: ["Distribution", "Ball Playing", "Reflexes"], imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" },
-          { name: "Thibaut Courtois", similarity: 79, strengths: ["Height", "Reach", "Positioning"], imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec881214838" },
-          { name: "Jan Oblak", similarity: 81, strengths: ["Shot Stopping", "Positioning", "Consistency"], imageUrl: "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2" },
+          { name: "Alisson Becker", similarity: 84, strengths: ["Reflexes", "Distribution", "Command"] },
+          { name: "Ederson", similarity: 82, strengths: ["Distribution", "Ball Playing", "Reflexes"] },
+          { name: "Thibaut Courtois", similarity: 79, strengths: ["Height", "Reach", "Positioning"] },
+          { name: "Jan Oblak", similarity: 81, strengths: ["Shot Stopping", "Positioning", "Consistency"] },
         ]
       };
       
-      // Main player images
-      const mainPlayerImages: Record<string, string> = {
-        "Virgil van Dijk": "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=400&h=400&fit=crop",
-        "Lionel Messi": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
-        "Kevin De Bruyne": "https://images.unsplash.com/photo-1501286353178-1ec881214838?w=400&h=400&fit=crop",
-        "Manuel Neuer": "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2?w=400&h=400&fit=crop"
-      };
-
       // Mock player traits data - fingerprint
       const mockPlayerTraits: Record<string, Record<string, PlayerTrait[]>> = {
         "Virgil van Dijk": {
@@ -124,10 +118,34 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
       const selectedPlayerTraits = mockPlayerTraits[player || ""] || {};
       setPlayerTraits(selectedPlayerTraits);
       
-      // Set main player image
-      setMainPlayerImage(mainPlayerImages[player || ""] || "");
-      
       setLoading(false);
+      
+      // Now fetch images from Wikipedia after basic data is loaded
+      if (player) {
+        setImagesLoading(true);
+        fetchWikipediaImage(player).then(imageUrl => {
+          if (imageUrl) {
+            setMainPlayerImage(imageUrl);
+          }
+        });
+        
+        // Fetch images for similar players
+        const updatedPlayers = [...selectedSimilarPlayers];
+        const fetchPromises = updatedPlayers.map(async (similarPlayer, index) => {
+          const imageUrl = await fetchWikipediaImage(similarPlayer.name);
+          if (imageUrl) {
+            updatedPlayers[index] = { ...similarPlayer, imageUrl };
+          }
+        });
+        
+        Promise.all(fetchPromises).then(() => {
+          setSimilarPlayers(updatedPlayers);
+          setImagesLoading(false);
+        }).catch(error => {
+          console.error("Error fetching player images:", error);
+          setImagesLoading(false);
+        });
+      }
     };
 
     fetchSimilarPlayers();
@@ -181,12 +199,19 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
             <div className="bg-[#1C1C1C] p-5 rounded-lg border border-[#333333] mb-6">
               <div className="flex flex-col md:flex-row gap-6 items-center mb-6">
                 <div className="w-full md:w-1/3 flex justify-center">
-                  {mainPlayerImage ? (
+                  {imagesLoading ? (
+                    <Skeleton className="w-48 h-48 rounded-lg bg-[#2A2A2A]" />
+                  ) : mainPlayerImage ? (
                     <div className="relative w-48 h-48 rounded-lg overflow-hidden border-2 border-[#E4002B]">
                       <img 
                         src={mainPlayerImage} 
                         alt={player} 
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback if image fails to load
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=400&h=400&fit=crop";
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0A0A]/80 flex items-end">
                         <div className="p-3 w-full">
@@ -225,12 +250,19 @@ const PlayerComparisonView = ({ player, position }: PlayerComparisonViewProps) =
               <HoverCardTrigger asChild>
                 <div className="bg-[#1C1C1C] p-4 rounded-lg shadow-lg border border-[#333333] hover:border-[#E4002B]/30 transition-all cursor-pointer">
                   <div className="flex items-center gap-4 mb-4">
-                    {similarPlayer.imageUrl ? (
+                    {imagesLoading ? (
+                      <Skeleton className="w-16 h-16 rounded-full bg-[#2A2A2A]" />
+                    ) : similarPlayer.imageUrl ? (
                       <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#0057B8]">
                         <img 
-                          src={`${similarPlayer.imageUrl}?w=100&h=100&fit=crop`} 
+                          src={similarPlayer.imageUrl} 
                           alt={similarPlayer.name} 
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Fallback if image fails to load
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = `https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=100&h=100&fit=crop`;
+                          }}
                         />
                       </div>
                     ) : (
