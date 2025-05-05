@@ -11,9 +11,15 @@ import SearchPlayer from "@/components/SearchPlayer";
 
 const positions = [
   { value: "gk", label: "Goalkeeper" },
-  { value: "def", label: "Defender" },
-  { value: "mid", label: "Midfielder" },
-  { value: "fwd", label: "Forward" }
+  { value: "rb", label: "Right Back" },
+  { value: "cb", label: "Center Back" },
+  { value: "lb", label: "Left Back" },
+  { value: "dm", label: "Defensive Midfielder" },
+  { value: "cm", label: "Central Midfielder" },
+  { value: "am", label: "Attacking Midfielder" },
+  { value: "rw", label: "Right Winger" },
+  { value: "lw", label: "Left Winger" },
+  { value: "cf", label: "Center Forward" },
 ];
 
 const Index = () => {
@@ -55,7 +61,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <header className="bg-gradient-to-r from-[#ff0038] to-[#0066ff] text-white py-6 px-8 shadow-lg">
+      <header className="bg-gradient-to-r from-[#ff003f] to-[#0066ff] text-white py-6 px-8 shadow-lg">
         <div className="container mx-auto">
           <h1 className="text-4xl font-bold tracking-tight">Barcelona Player Finder</h1>
           <p className="mt-2 text-lg text-gray-200">Player Similarity Comparison Tool</p>
@@ -95,7 +101,7 @@ const Index = () => {
               <Button 
                 onClick={startComparison} 
                 disabled={!selectedPosition || !sourcePlayer} 
-                className="w-full bg-gradient-to-r from-[#ff0038] to-[#0066ff] hover:opacity-90 border-none"
+                className="w-full bg-gradient-to-r from-[#ff003f] to-[#0066ff] hover:opacity-90 border-none text-white"
               >
                 Compare Players <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
