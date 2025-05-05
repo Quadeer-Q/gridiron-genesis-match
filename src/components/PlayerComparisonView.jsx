@@ -145,15 +145,15 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
   if (loading) {
     return (
       <div className="p-6 space-y-6">
-        <Skeleton className="h-8 w-3/4 mb-4 bg-[#222]" />
+        <Skeleton className="h-8 w-3/4 mb-4 bg-[#1B1F64]" />
         <div className="space-y-8">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="space-y-3">
-              <Skeleton className="h-6 w-1/2 bg-[#222]" />
-              <Skeleton className="h-4 w-full bg-[#222]" />
+              <Skeleton className="h-6 w-1/2 bg-[#1B1F64]" />
+              <Skeleton className="h-4 w-full bg-[#1B1F64]" />
               <div className="flex gap-2">
                 {[1, 2, 3].map((j) => (
-                  <Skeleton key={j} className="h-6 w-20 bg-[#222]" />
+                  <Skeleton key={j} className="h-6 w-20 bg-[#1B1F64]" />
                 ))}
               </div>
             </div>
@@ -166,18 +166,18 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
   return (
     <div className="p-6">
       <CardHeader className="px-0">
-        <CardTitle className="text-white">Players Similar to {player}</CardTitle>
+        <CardTitle className="text-[#F1F1F1]">Players Similar to {player}</CardTitle>
       </CardHeader>
       <CardContent className="px-0">
         {player && (
           <div className="mb-8">
-            <div className="bg-[#121212] p-5 rounded-lg border border-[#333] mb-6">
+            <div className="bg-[#0D0D0D] p-5 rounded-lg border border-[#1B1F64] mb-6">
               <div className="flex flex-col md:flex-row gap-6 items-center mb-6">
                 <div className="w-full md:w-1/3 flex justify-center">
                   {imagesLoading ? (
-                    <Skeleton className="w-48 h-48 rounded-lg bg-[#222]" />
+                    <Skeleton className="w-48 h-48 rounded-lg bg-[#1B1F64]" />
                   ) : mainPlayerImage ? (
-                    <div className="relative w-48 h-48 rounded-lg overflow-hidden border-2 border-[#ff0038]">
+                    <div className="relative w-48 h-48 rounded-lg overflow-hidden border-2 border-[#FF1E56]">
                       <img 
                         src={mainPlayerImage} 
                         alt={player} 
@@ -188,26 +188,26 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                           e.currentTarget.src = "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=400&h=400&fit=crop";
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0A0A]/80 flex items-end">
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0D0D0D]/80 flex items-end">
                         <div className="p-3 w-full">
-                          <h3 className="text-white font-bold text-lg">{player}</h3>
-                          <p className="text-gray-300 text-sm">{position === "def" ? "Defender" : position}</p>
+                          <h3 className="text-[#F1F1F1] font-bold text-lg">{player}</h3>
+                          <p className="text-[#555555] text-sm">{position === "def" ? "Defender" : position}</p>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <Avatar className="w-48 h-48 rounded-lg bg-[#222] border-2 border-[#ff0038]">
+                    <Avatar className="w-48 h-48 rounded-lg bg-[#1B1F64] border-2 border-[#FF1E56]">
                       <AvatarFallback className="text-4xl">{player?.charAt(0) || "P"}</AvatarFallback>
                     </Avatar>
                   )}
                 </div>
                 <div className="w-full md:w-2/3">
-                  <h3 className="text-xl font-bold text-white mb-4">Unique Traits</h3>
+                  <h3 className="text-xl font-bold text-[#F1F1F1] mb-4">Unique Traits</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {getUniqueTraits().map((trait) => (
                       <div key={trait.trait} className="flex justify-between items-center">
-                        <span className="text-gray-300">{trait.trait}</span>
-                        <span className="font-mono bg-gradient-to-r from-[#ff0038] to-[#0066ff] bg-clip-text text-transparent font-bold">
+                        <span className="text-[#555555]">{trait.trait}</span>
+                        <span className="font-mono bg-gradient-to-r from-[#FF1E56] to-[#2F6EFF] bg-clip-text text-transparent font-bold">
                           {trait.value.toFixed(2)}
                         </span>
                       </div>
@@ -221,13 +221,13 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
 
         {selectedPlayerCard ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setSelectedPlayerCard(null)}>
-            <div className="w-full max-w-3xl bg-[#121212] rounded-lg shadow-xl overflow-auto max-h-[90vh]" onClick={e => e.stopPropagation()}>
+            <div className="w-full max-w-3xl bg-[#0D0D0D] rounded-lg shadow-xl overflow-auto max-h-[90vh]" onClick={e => e.stopPropagation()}>
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-white">{selectedPlayerCard} vs {player}</h3>
+                  <h3 className="text-2xl font-bold text-[#F1F1F1]">{selectedPlayerCard} vs {player}</h3>
                   <button 
                     onClick={() => setSelectedPlayerCard(null)}
-                    className="text-gray-400 hover:text-white"
+                    className="text-[#555555] hover:text-[#F1F1F1]"
                   >
                     ×
                   </button>
@@ -241,14 +241,14 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                         <img 
                           src={mainPlayerImage} 
                           alt={player} 
-                          className="w-48 h-48 object-cover rounded-lg mx-auto border-2 border-[#ff0038]"
+                          className="w-48 h-48 object-cover rounded-lg mx-auto border-2 border-[#FF1E56]"
                         />
                       ) : (
-                        <Avatar className="w-48 h-48 rounded-lg bg-[#222] mx-auto border-2 border-[#ff0038]">
+                        <Avatar className="w-48 h-48 rounded-lg bg-[#1B1F64] mx-auto border-2 border-[#FF1E56]">
                           <AvatarFallback className="text-4xl">{player?.charAt(0) || "P"}</AvatarFallback>
                         </Avatar>
                       )}
-                      <h4 className="text-xl font-bold text-white mt-2">{player}</h4>
+                      <h4 className="text-xl font-bold text-[#F1F1F1] mt-2">{player}</h4>
                     </div>
                   </div>
                   
@@ -259,49 +259,49 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                         <img 
                           src={similarPlayers.find(p => p.name === selectedPlayerCard)?.imageUrl} 
                           alt={selectedPlayerCard} 
-                          className="w-48 h-48 object-cover rounded-lg mx-auto border-2 border-[#0066ff]"
+                          className="w-48 h-48 object-cover rounded-lg mx-auto border-2 border-[#2F6EFF]"
                         />
                       ) : (
-                        <Avatar className="w-48 h-48 rounded-lg bg-[#222] mx-auto border-2 border-[#0066ff]">
+                        <Avatar className="w-48 h-48 rounded-lg bg-[#1B1F64] mx-auto border-2 border-[#2F6EFF]">
                           <AvatarFallback className="text-4xl">{selectedPlayerCard?.charAt(0) || "P"}</AvatarFallback>
                         </Avatar>
                       )}
-                      <h4 className="text-xl font-bold text-white mt-2">{selectedPlayerCard}</h4>
+                      <h4 className="text-xl font-bold text-[#F1F1F1] mt-2">{selectedPlayerCard}</h4>
                     </div>
                   </div>
                 </div>
                 
                 <div className="mt-8">
-                  <h4 className="text-xl font-bold text-white mb-4">Trait Comparison</h4>
-                  <div className="space-y-4 bg-[#0A0A0A] p-4 rounded-lg">
+                  <h4 className="text-xl font-bold text-[#F1F1F1] mb-4">Trait Comparison</h4>
+                  <div className="space-y-4 bg-[#121212] p-4 rounded-lg border border-[#1B1F64]">
                     {playerTraits[selectedPlayerCard]?.map((trait) => (
                       <div key={trait.trait} className="flex items-center justify-between">
-                        <span className="text-md text-gray-300">{trait.trait}</span>
+                        <span className="text-md text-[#F1F1F1]">{trait.trait}</span>
                         <div className="flex items-center">
-                          <span className={`text-md font-mono ${trait.value > 0 ? 'text-[#00ff88]' : 'text-[#ff4466]'}`}>
+                          <span className={`text-md font-mono ${trait.value > 0 ? 'text-[#00ff88]' : 'text-[#FF1E56]'}`}>
                             {trait.value > 0 ? '+' : ''}{trait.value.toFixed(1)}
                           </span>
                           {trait.value > 0 ? (
                             <ArrowUp className="h-4 w-4 text-[#00ff88] ml-1" />
                           ) : (
-                            <ArrowDown className="h-4 w-4 text-[#ff4466] ml-1" />
+                            <ArrowDown className="h-4 w-4 text-[#FF1E56] ml-1" />
                           )}
                         </div>
                       </div>
                     ))}
                     {!playerTraits[selectedPlayerCard] && (
-                      <p className="text-gray-400 text-sm">No detailed comparison data available</p>
+                      <p className="text-[#555555] text-sm">No detailed comparison data available</p>
                     )}
                   </div>
                 </div>
                 
                 <div className="mt-6">
-                  <h4 className="text-xl font-bold text-white mb-3">Key Similarities</h4>
+                  <h4 className="text-xl font-bold text-[#F1F1F1] mb-3">Key Similarities</h4>
                   <div className="flex flex-wrap gap-2">
                     {similarPlayers.find(p => p.name === selectedPlayerCard)?.strengths.map((strength) => (
                       <span 
                         key={strength} 
-                        className="bg-[#0066ff]/20 border border-[#0066ff]/40 text-white px-3 py-1 rounded-full text-sm"
+                        className="neon-tag"
                       >
                         {strength}
                       </span>
@@ -317,15 +317,15 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
           {similarPlayers.map((similarPlayer) => (
             <div 
               key={similarPlayer.name}
-              className="bg-[#121212] rounded-lg shadow-lg border border-[#333] hover:border-[#ff0038]/50 transition-all cursor-pointer transform hover:scale-[1.02]"
+              className="player-card"
               onClick={() => handleCardClick(similarPlayer.name)}
             >
               <div className="p-4">
                 <div className="flex items-center gap-4 mb-4">
                   {imagesLoading ? (
-                    <Skeleton className="w-16 h-16 rounded-full bg-[#222]" />
+                    <Skeleton className="w-16 h-16 rounded-full bg-[#1B1F64]" />
                   ) : similarPlayer.imageUrl ? (
-                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#0066ff]">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#2F6EFF]">
                       <img 
                         src={similarPlayer.imageUrl} 
                         alt={similarPlayer.name} 
@@ -338,15 +338,15 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                       />
                     </div>
                   ) : (
-                    <Avatar className="w-16 h-16 border-2 border-[#0066ff]">
+                    <Avatar className="w-16 h-16 border-2 border-[#2F6EFF]">
                       <AvatarFallback>{similarPlayer.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                   )}
                   
                   <div className="flex-1">
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-lg font-semibold text-white">{similarPlayer.name}</h3>
-                      <span className="bg-gradient-to-r from-[#ff0038] to-[#0066ff] text-white px-2 py-1 rounded-full text-xs font-medium">
+                      <h3 className="text-lg font-semibold text-[#F1F1F1]">{similarPlayer.name}</h3>
+                      <span className="neon-badge">
                         {similarPlayer.similarity}% Match
                       </span>
                     </div>
@@ -355,16 +355,16 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                 
                 <Progress 
                   value={similarPlayer.similarity} 
-                  className="h-2 mb-4 bg-[#222]"
+                  className="neon-progress mb-4"
                 />
                 
                 <div>
-                  <p className="text-sm font-medium text-gray-300 mb-2">Key Similarities:</p>
+                  <p className="text-sm font-medium text-[#555555] mb-2">Key Similarities:</p>
                   <div className="flex flex-wrap gap-2">
                     {similarPlayer.strengths.map((strength) => (
                       <span 
                         key={strength} 
-                        className="bg-[#0066ff]/20 border border-[#0066ff]/40 text-white px-2 py-1 rounded-full text-xs"
+                        className="neon-tag"
                       >
                         {strength}
                       </span>
