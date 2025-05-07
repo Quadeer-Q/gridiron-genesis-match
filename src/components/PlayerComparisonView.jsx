@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { fetchWikipediaImage } from "@/utils/wikipediaImage";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelectedPlayerCard }) => {
   const [loading, setLoading] = useState(true);
@@ -13,6 +14,7 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
   const [playerStats, setPlayerStats] = useState({});
   const [mainPlayerImage, setMainPlayerImage] = useState("");
   const [imagesLoading, setImagesLoading] = useState(false);
+  const [playerTeams, setPlayerTeams] = useState({});
 
   useEffect(() => {
     // This would be replaced with an actual API call to your ML backend
@@ -25,17 +27,17 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
       // Mock similar players data
       const mockSimilarPlayers = {
         "Lionel Messi": [
-          { name: "Mohamed Salah", similarity: 87, strengths: ["Dribbling", "Finishing", "Vision"] },
-          { name: "Kevin De Bruyne", similarity: 81, strengths: ["Passing", "Vision", "Set Pieces"] },
-          { name: "Neymar Jr", similarity: 89, strengths: ["Dribbling", "Creativity", "Technical"] },
-          { name: "Bernardo Silva", similarity: 79, strengths: ["Ball Control", "Agility", "Passing"] },
+          { name: "Mohamed Salah", similarity: 87 },
+          { name: "Kevin De Bruyne", similarity: 81 },
+          { name: "Neymar Jr", similarity: 89 },
+          { name: "Bernardo Silva", similarity: 79 },
         ],
         "Virgil van Dijk": [
-          { name: "Alexsandro Ribeiro", similarity: 96, strengths: ["Aerial Duels", "Positioning", "Leadership"] },
-          { name: "Levi Colwill", similarity: 96, strengths: ["Tackling", "Aerial Duels", "Composure"] },
-          { name: "Kim Min-jae", similarity: 96, strengths: ["Physical Presence", "Interceptions", "Speed"] },
-          { name: "Amir Rrahmani", similarity: 95, strengths: ["Positioning", "Anticipation", "Tackling"] },
-          { name: "Obite N'Dicka", similarity: 95, strengths: ["Aerial Duels", "Strength", "Marking"] },
+          { name: "Alexsandro Ribeiro", similarity: 96 },
+          { name: "Levi Colwill", similarity: 96 },
+          { name: "Kim Min-jae", similarity: 96 },
+          { name: "Amir Rrahmani", similarity: 95 },
+          { name: "Obite N'Dicka", similarity: 95 },
         ]
       };
       
@@ -118,18 +120,26 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
       // Fetch images from Wikipedia after basic data is loaded
       if (player) {
         setImagesLoading(true);
-        fetchWikipediaImage(player).then(imageUrl => {
+        
+        // Fetch main player image and team
+        fetchWikipediaInfo(player).then(({imageUrl, team}) => {
           if (imageUrl) {
             setMainPlayerImage(imageUrl);
           }
+          if (team) {
+            setPlayerTeams(prev => ({...prev, [player]: team}));
+          }
         });
         
-        // Fetch images for similar players
+        // Fetch images and teams for similar players
         const updatedPlayers = [...selectedSimilarPlayers];
         const fetchPromises = updatedPlayers.map(async (similarPlayer, index) => {
-          const imageUrl = await fetchWikipediaImage(similarPlayer.name);
+          const {imageUrl, team} = await fetchWikipediaInfo(similarPlayer.name);
           if (imageUrl) {
             updatedPlayers[index] = { ...similarPlayer, imageUrl };
+          }
+          if (team) {
+            setPlayerTeams(prev => ({...prev, [similarPlayer.name]: team}));
           }
         });
         
@@ -145,6 +155,75 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
 
     fetchSimilarPlayers();
   }, [player, position]);
+
+  // New function to fetch both image and team info from Wikipedia
+  const fetchWikipediaInfo = async (playerName) => {
+    try {
+      // First, search for the page
+      const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(
+        playerName
+      )}&format=json&origin=*`;
+      
+      const searchResponse = await fetch(searchUrl);
+      const searchData = await searchResponse.json();
+      
+      if (!searchData.query.search.length) {
+        console.log(`No Wikipedia page found for ${playerName}`);
+        return { imageUrl: null, team: null };
+      }
+      
+      const pageTitle = searchData.query.search[0].title;
+      
+      // Get page images
+      const imagesUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(
+        pageTitle
+      )}&prop=pageimages&format=json&pithumbsize=500&origin=*`;
+      
+      const imageResponse = await fetch(imagesUrl);
+      const imageData = await imageResponse.json();
+      
+      const pages = imageData.query.pages;
+      const pageId = Object.keys(pages)[0];
+      
+      let imageUrl = null;
+      if (pages[pageId].thumbnail && pages[pageId].thumbnail.source) {
+        imageUrl = pages[pageId].thumbnail.source;
+      }
+      
+      // Get page extract for team info
+      const extractUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(
+        pageTitle
+      )}&format=json&origin=*`;
+      
+      const extractResponse = await fetch(extractUrl);
+      const extractData = await extractResponse.json();
+      
+      const extractPages = extractData.query.pages;
+      const extractPageId = Object.keys(extractPages)[0];
+      
+      let team = null;
+      if (extractPages[extractPageId].extract) {
+        const extract = extractPages[extractPageId].extract;
+        
+        // Try to extract team information from the intro paragraph
+        const teamMatches = extract.match(/plays for (\w+\s?\w+\s?\w+)|at (\w+\s?\w+\s?\w+)|with (\w+\s?\w+\s?\w+)/i);
+        if (teamMatches) {
+          team = teamMatches[1] || teamMatches[2] || teamMatches[3];
+        } else {
+          // Alternative attempt to find the club name
+          const clubMatches = extract.match(/([A-Z][a-zA-Z\s]+) (club|FC|United|City|Rovers|Athletic|Albion)/);
+          if (clubMatches) {
+            team = clubMatches[0];
+          }
+        }
+      }
+      
+      return { imageUrl, team };
+    } catch (error) {
+      console.error(`Error fetching Wikipedia info for ${playerName}:`, error);
+      return { imageUrl: null, team: null };
+    }
+  };
 
   const getUniqueTraits = () => {
     // Mock data for van Dijk's unique traits
@@ -215,7 +294,9 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0D0D0D]/80 flex items-end">
                         <div className="p-3 w-full">
                           <h3 className="text-[#F1F1F1] font-bold text-lg">{player}</h3>
-                          <p className="text-[#555555] text-sm">{position === "def" ? "Defender" : position}</p>
+                          <p className="text-[#FF1E56] text-sm">
+                            {playerTeams[player] || position === "def" ? "Defender" : position}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -246,7 +327,7 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
         {/* Detailed player comparison overlay */}
         {selectedPlayerCard ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setSelectedPlayerCard(null)}>
-            <div className="w-full max-w-3xl bg-[#0D0D0D] rounded-lg shadow-xl overflow-auto max-h-[90vh]" onClick={e => e.stopPropagation()}>
+            <div className="w-full max-w-3xl bg-[#0D0D0D] rounded-lg shadow-xl overflow-hidden max-h-[90vh]" onClick={e => e.stopPropagation()}>
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-[#F1F1F1] bg-gradient-to-r from-[#FF1E56] to-[#2F6EFF] bg-clip-text text-transparent">
@@ -276,6 +357,9 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                         </Avatar>
                       )}
                       <h4 className="text-xl font-bold text-[#F1F1F1] mt-2">{player}</h4>
+                      {playerTeams[player] && (
+                        <p className="text-[#FF1E56]">{playerTeams[player]}</p>
+                      )}
                     </div>
                   </div>
                   
@@ -294,59 +378,50 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                         </Avatar>
                       )}
                       <h4 className="text-xl font-bold text-[#F1F1F1] mt-2">{selectedPlayerCard}</h4>
+                      {playerTeams[selectedPlayerCard] && (
+                        <p className="text-[#2F6EFF]">{playerTeams[selectedPlayerCard]}</p>
+                      )}
                     </div>
                   </div>
                 </div>
                 
                 <div className="mt-8">
                   <h4 className="text-xl font-bold text-[#F1F1F1] mb-4">Statistical Comparison</h4>
-                  <div className="space-y-4 bg-[#121212] p-4 rounded-lg border border-[#1B1F64]">
-                    {playerStats[selectedPlayerCard] && Object.entries(playerStats[selectedPlayerCard]).map(([stat, values]) => (
-                      <div key={stat} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-md text-[#F1F1F1]">{stat}</span>
-                          <div className="flex items-center">
-                            <span className={`text-md font-mono text-[#FF1E56]`}>
-                              {values.base.toFixed(1)}
-                            </span>
-                            <span className="mx-2 text-[#555555]">vs</span>
-                            <span className={`text-md font-mono text-[#2F6EFF]`}>
-                              {values.compared.toFixed(1)}
-                            </span>
-                            <span className={`ml-2 text-sm font-mono ${values.diff > 0 ? 'text-[#00ff88]' : 'text-[#FF1E56]'}`}>
-                              ({values.diff > 0 ? '+' : ''}{values.diff.toFixed(1)})
-                            </span>
-                            {values.diff > 0 ? (
-                              <ArrowUp className="h-4 w-4 text-[#00ff88] ml-1" />
-                            ) : (
-                              <ArrowDown className="h-4 w-4 text-[#FF1E56] ml-1" />
-                            )}
+                  <ScrollArea className="h-60 pr-4">
+                    <div className="space-y-4 bg-[#121212] p-4 rounded-lg border border-[#1B1F64]">
+                      {playerStats[selectedPlayerCard] && Object.entries(playerStats[selectedPlayerCard]).map(([stat, values]) => (
+                        <div key={stat} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-md text-[#F1F1F1]">{stat}</span>
+                            <div className="flex items-center">
+                              <span className={`text-md font-mono text-[#FF1E56]`}>
+                                {values.base.toFixed(1)}
+                              </span>
+                              <span className="mx-2 text-[#555555]">vs</span>
+                              <span className={`text-md font-mono text-[#2F6EFF]`}>
+                                {values.compared.toFixed(1)}
+                              </span>
+                              <span className={`ml-2 text-sm font-mono ${values.diff > 0 ? 'text-[#00ff88]' : 'text-[#FF1E56]'}`}>
+                                ({values.diff > 0 ? '+' : ''}{values.diff.toFixed(1)})
+                              </span>
+                              {values.diff > 0 ? (
+                                <ArrowUp className="h-4 w-4 text-[#00ff88] ml-1" />
+                              ) : (
+                                <ArrowDown className="h-4 w-4 text-[#FF1E56] ml-1" />
+                              )}
+                            </div>
                           </div>
+                          <Progress 
+                            value={values.compared}
+                            className="h-2 rounded-full bg-[#1B1F64]"
+                          />
                         </div>
-                        <Progress 
-                          value={values.compared}
-                          className="h-2 rounded-full bg-[#1B1F64]"
-                        />
-                      </div>
-                    ))}
-                    {!playerStats[selectedPlayerCard] && (
-                      <p className="text-[#555555] text-sm">No detailed comparison data available</p>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="mt-6">
-                  <h4 className="text-xl font-bold text-[#F1F1F1] mb-3">Key Similarities</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {similarPlayers.find(p => p.name === selectedPlayerCard)?.strengths.map((strength) => (
-                      <span 
-                        key={strength} 
-                        className="neon-tag"
-                      >
-                        {strength}
-                      </span>
-                    ))}
-                  </div>
+                      ))}
+                      {!playerStats[selectedPlayerCard] && (
+                        <p className="text-[#555555] text-sm">No detailed comparison data available</p>
+                      )}
+                    </div>
+                  </ScrollArea>
                 </div>
               </div>
             </div>
@@ -390,6 +465,9 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                         {similarPlayer.similarity}% Match
                       </span>
                     </div>
+                    {playerTeams[similarPlayer.name] && (
+                      <p className="text-sm text-[#2F6EFF]">{playerTeams[similarPlayer.name]}</p>
+                    )}
                   </div>
                 </div>
                 
@@ -397,20 +475,6 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                   value={similarPlayer.similarity} 
                   className="neon-progress mb-4"
                 />
-                
-                <div>
-                  <p className="text-sm font-medium text-[#555555] mb-2">Key Similarities:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {similarPlayer.strengths.map((strength) => (
-                      <span 
-                        key={strength} 
-                        className="neon-tag"
-                      >
-                        {strength}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           ))}
