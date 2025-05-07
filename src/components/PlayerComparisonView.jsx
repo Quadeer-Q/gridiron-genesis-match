@@ -1,17 +1,16 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { ArrowUp, ArrowDown } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { fetchWikipediaImage } from "@/utils/wikipediaImage";
 
 const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelectedPlayerCard }) => {
   const [loading, setLoading] = useState(true);
   const [similarPlayers, setSimilarPlayers] = useState([]);
-  const [playerTraits, setPlayerTraits] = useState({});
+  const [playerStats, setPlayerStats] = useState({});
   const [mainPlayerImage, setMainPlayerImage] = useState("");
   const [imagesLoading, setImagesLoading] = useState(false);
 
@@ -40,58 +39,83 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
         ]
       };
       
-      // Mock player traits data - fingerprint
-      const mockPlayerTraits = {
+      // Player comparison stats
+      const mockPlayerStats = {
         "Virgil van Dijk": {
-          "Alexsandro Ribeiro": [
-            { trait: "PrgDist", value: -0.8 },
-            { trait: "Cmp", value: -0.5 },
-            { trait: "TotDist", value: -1.2 },
-            { trait: "Carries", value: 0.3 },
-            { trait: "Int_stats_misc", value: 0.7 },
-          ],
-          "Levi Colwill": [
-            { trait: "PrgDist", value: -0.3 },
-            { trait: "Cmp", value: -0.7 },
-            { trait: "TotDist", value: -0.5 },
-            { trait: "Carries", value: -0.2 },
-            { trait: "Int_stats_misc", value: 0.4 },
-          ],
-          "Kim Min-jae": [
-            { trait: "PrgDist", value: 0.4 },
-            { trait: "Cmp", value: -0.9 },
-            { trait: "TotDist", value: 0.2 },
-            { trait: "Carries", value: 0.5 },
-            { trait: "Int_stats_misc", value: 0.3 },
-          ],
-          "Amir Rrahmani": [
-            { trait: "PrgDist", value: -0.6 },
-            { trait: "Cmp", value: -1.1 },
-            { trait: "TotDist", value: -0.8 },
-            { trait: "Carries", value: -0.4 },
-            { trait: "Int_stats_misc", value: 0.1 },
-          ],
-          "Obite N'Dicka": [
-            { trait: "PrgDist", value: -0.7 },
-            { trait: "Cmp", value: -0.8 },
-            { trait: "TotDist", value: -0.9 },
-            { trait: "Carries", value: -0.6 },
-            { trait: "Int_stats_misc", value: 0.5 },
-          ],
+          "Alexsandro Ribeiro": {
+            "PrgDist": { base: 100.0, compared: 72.4, diff: -27.6 },
+            "Cmp": { base: 98.7, compared: 75.0, diff: -23.7 },
+            "TotDist": { base: 98.1, compared: 81.5, diff: -16.6 },
+            "Total Score": { base: 97.3, compared: 74.2, diff: -23.2 },
+            "Att": { base: 99.6, compared: 76.2, diff: -23.4 },
+            "Carries": { base: 93.7, compared: 82.0, diff: -11.7 },
+            "onxG": { base: 100.0, compared: 56.1, diff: -43.9 },
+            "Int_stats_misc": { base: 82.0, compared: 39.3, diff: -42.6 },
+            "Def 3rd_stats_possession": { base: 96.5, compared: 72.2, diff: -24.3 },
+            "onG": { base: 100.0, compared: 49.3, diff: -50.7 }
+          },
+          "Levi Colwill": {
+            "PrgDist": { base: 100.0, compared: 78.8, diff: -21.2 },
+            "Cmp": { base: 98.7, compared: 86.3, diff: -12.4 },
+            "TotDist": { base: 98.1, compared: 86.1, diff: -12.1 },
+            "Total Score": { base: 97.3, compared: 84.2, diff: -13.1 },
+            "Att": { base: 99.6, compared: 89.1, diff: -10.6 },
+            "Carries": { base: 93.7, compared: 82.4, diff: -11.2 },
+            "onxG": { base: 100.0, compared: 70.6, diff: -29.4 },
+            "Int_stats_misc": { base: 82.0, compared: 45.9, diff: -36.1 },
+            "Def 3rd_stats_possession": { base: 96.5, compared: 97.7, diff: 1.2 },
+            "onG": { base: 100.0, compared: 63.4, diff: -36.6 }
+          },
+          "Kim Min-jae": {
+            "PrgDist": { base: 100.0, compared: 92.9, diff: -7.1 },
+            "Cmp": { base: 98.7, compared: 100.0, diff: 1.3 },
+            "TotDist": { base: 98.1, compared: 91.4, diff: -6.8 },
+            "Total Score": { base: 97.3, compared: 85.8, diff: -11.5 },
+            "Att": { base: 99.6, compared: 100.0, diff: 0.4 },
+            "Carries": { base: 93.7, compared: 95.4, diff: 1.7 },
+            "onxG": { base: 100.0, compared: 88.2, diff: -11.8 },
+            "Int_stats_misc": { base: 82.0, compared: 52.5, diff: -29.5 },
+            "Def 3rd_stats_possession": { base: 96.5, compared: 76.8, diff: -19.7 },
+            "onG": { base: 100.0, compared: 98.6, diff: -1.4 }
+          },
+          "Amir Rrahmani": {
+            "PrgDist": { base: 100.0, compared: 83.8, diff: -16.2 },
+            "Cmp": { base: 98.7, compared: 86.6, diff: -12.1 },
+            "TotDist": { base: 98.1, compared: 94.4, diff: -3.7 },
+            "Total Score": { base: 97.3, compared: 82.3, diff: -15.1 },
+            "Att": { base: 99.6, compared: 87.0, diff: -12.6 },
+            "Carries": { base: 93.7, compared: 86.7, diff: -7.0 },
+            "onxG": { base: 100.0, compared: 60.7, diff: -39.3 },
+            "Int_stats_misc": { base: 82.0, compared: 32.8, diff: -49.2 },
+            "Def 3rd_stats_possession": { base: 96.5, compared: 91.5, diff: -5.0 },
+            "onG": { base: 100.0, compared: 64.8, diff: -35.2 }
+          },
+          "Obite N'Dicka": {
+            "PrgDist": { base: 100.0, compared: 72.0, diff: -28.0 },
+            "Cmp": { base: 98.7, compared: 85.7, diff: -13.0 },
+            "TotDist": { base: 98.1, compared: 84.9, diff: -13.2 },
+            "Total Score": { base: 97.3, compared: 79.9, diff: -17.4 },
+            "Att": { base: 99.6, compared: 85.9, diff: -13.7 },
+            "Carries": { base: 93.7, compared: 87.2, diff: -6.5 },
+            "onxG": { base: 100.0, compared: 66.3, diff: -33.7 },
+            "Int_stats_misc": { base: 82.0, compared: 50.8, diff: -31.1 },
+            "Def 3rd_stats_possession": { base: 96.5, compared: 100.0, diff: 3.5 },
+            "onG": { base: 100.0, compared: 63.4, diff: -36.6 }
+          }
         }
       };
       
-      // Get similar players for the selected player, or use default
-      const selectedSimilarPlayers = mockSimilarPlayers[player || ""] || [];
+      // Get similar players for the selected player
+      const selectedSimilarPlayers = mockSimilarPlayers[player] || [];
       setSimilarPlayers(selectedSimilarPlayers);
       
-      // Get traits for the selected player comparison
-      const selectedPlayerTraits = mockPlayerTraits[player || ""] || {};
-      setPlayerTraits(selectedPlayerTraits);
+      // Get stats for the selected player comparison
+      const selectedPlayerStats = mockPlayerStats[player] || {};
+      setPlayerStats(selectedPlayerStats);
       
       setLoading(false);
       
-      // Now fetch images from Wikipedia after basic data is loaded
+      // Fetch images from Wikipedia after basic data is loaded
       if (player) {
         setImagesLoading(true);
         fetchWikipediaImage(player).then(imageUrl => {
@@ -219,15 +243,18 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
           </div>
         )}
 
+        {/* Detailed player comparison overlay */}
         {selectedPlayerCard ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setSelectedPlayerCard(null)}>
             <div className="w-full max-w-3xl bg-[#0D0D0D] rounded-lg shadow-xl overflow-auto max-h-[90vh]" onClick={e => e.stopPropagation()}>
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-[#F1F1F1]">{selectedPlayerCard} vs {player}</h3>
+                  <h3 className="text-2xl font-bold text-[#F1F1F1] bg-gradient-to-r from-[#FF1E56] to-[#2F6EFF] bg-clip-text text-transparent">
+                    {selectedPlayerCard} vs {player}
+                  </h3>
                   <button 
                     onClick={() => setSelectedPlayerCard(null)}
-                    className="text-[#555555] hover:text-[#F1F1F1]"
+                    className="text-[#555555] hover:text-[#F1F1F1] text-2xl"
                   >
                     ×
                   </button>
@@ -272,24 +299,37 @@ const PlayerComparisonView = ({ player, position, selectedPlayerCard, setSelecte
                 </div>
                 
                 <div className="mt-8">
-                  <h4 className="text-xl font-bold text-[#F1F1F1] mb-4">Trait Comparison</h4>
+                  <h4 className="text-xl font-bold text-[#F1F1F1] mb-4">Statistical Comparison</h4>
                   <div className="space-y-4 bg-[#121212] p-4 rounded-lg border border-[#1B1F64]">
-                    {playerTraits[selectedPlayerCard]?.map((trait) => (
-                      <div key={trait.trait} className="flex items-center justify-between">
-                        <span className="text-md text-[#F1F1F1]">{trait.trait}</span>
-                        <div className="flex items-center">
-                          <span className={`text-md font-mono ${trait.value > 0 ? 'text-[#00ff88]' : 'text-[#FF1E56]'}`}>
-                            {trait.value > 0 ? '+' : ''}{trait.value.toFixed(1)}
-                          </span>
-                          {trait.value > 0 ? (
-                            <ArrowUp className="h-4 w-4 text-[#00ff88] ml-1" />
-                          ) : (
-                            <ArrowDown className="h-4 w-4 text-[#FF1E56] ml-1" />
-                          )}
+                    {playerStats[selectedPlayerCard] && Object.entries(playerStats[selectedPlayerCard]).map(([stat, values]) => (
+                      <div key={stat} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-md text-[#F1F1F1]">{stat}</span>
+                          <div className="flex items-center">
+                            <span className={`text-md font-mono text-[#FF1E56]`}>
+                              {values.base.toFixed(1)}
+                            </span>
+                            <span className="mx-2 text-[#555555]">vs</span>
+                            <span className={`text-md font-mono text-[#2F6EFF]`}>
+                              {values.compared.toFixed(1)}
+                            </span>
+                            <span className={`ml-2 text-sm font-mono ${values.diff > 0 ? 'text-[#00ff88]' : 'text-[#FF1E56]'}`}>
+                              ({values.diff > 0 ? '+' : ''}{values.diff.toFixed(1)})
+                            </span>
+                            {values.diff > 0 ? (
+                              <ArrowUp className="h-4 w-4 text-[#00ff88] ml-1" />
+                            ) : (
+                              <ArrowDown className="h-4 w-4 text-[#FF1E56] ml-1" />
+                            )}
+                          </div>
                         </div>
+                        <Progress 
+                          value={values.compared}
+                          className="h-2 rounded-full bg-[#1B1F64]"
+                        />
                       </div>
                     ))}
-                    {!playerTraits[selectedPlayerCard] && (
+                    {!playerStats[selectedPlayerCard] && (
                       <p className="text-[#555555] text-sm">No detailed comparison data available</p>
                     )}
                   </div>

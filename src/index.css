@@ -84,6 +84,14 @@
     @apply bg-[#2F6EFF]/20 border border-[#2F6EFF]/40 text-white 
            px-2 py-1 rounded-full text-xs;
   }
+  
+  .stat-bar {
+    @apply h-2 rounded-full overflow-hidden relative bg-[#1B1F64];
+  }
+  
+  .stat-value {
+    @apply absolute top-0 left-0 h-full bg-gradient-to-r from-[#FF1E56] to-[#2F6EFF] transition-all;
+  }
 }
 
 #root {
