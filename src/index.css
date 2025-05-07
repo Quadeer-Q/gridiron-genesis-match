@@ -74,6 +74,26 @@
   ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(to bottom, #ff3969, #4d83ff);
   }
+  
+  /* Add custom scrollbar class */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #1B1F64;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #FF1E56, #2F6EFF);
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #ff3969, #4d83ff);
+  }
 }
 
 @layer components {
